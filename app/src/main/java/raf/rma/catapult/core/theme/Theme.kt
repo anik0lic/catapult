@@ -1,6 +1,5 @@
-package raf.rma.catapult.ui.theme
+package raf.rma.catapult.core.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

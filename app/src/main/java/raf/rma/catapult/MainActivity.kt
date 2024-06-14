@@ -4,36 +4,34 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import raf.rma.catapult.ui.theme.CatapultTheme
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
+import dagger.hilt.android.AndroidEntryPoint
+import raf.rma.catapult.analytics.AppAnalytics
+import raf.rma.catapult.navigation.AlbumNavigation
+import raf.rma.catapult.core.theme.CatapultTheme
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val analytics = AppAnalytics()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
-            CatapultTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            CompositionLocalProvider(
+                LocalAnalytics provides analytics
+            ) {
+                CatapultTheme {
+                    AlbumNavigation()
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+val LocalAnalytics = compositionLocalOf<AppAnalytics> {
+    error("Analytics not provided")
 }

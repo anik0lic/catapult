@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1082846703766",
+    "project_id": "catapult-af2a7",
+    "storage_bucket": "catapult-af2a7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1082846703766:android:18d83cbd04b6065a3412b7",
+        "android_client_info": {
+          "package_name": "raf.rma.catapult"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-gNZlh5hoDIZhfuuWlTEbiuvY_0i4_o4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
