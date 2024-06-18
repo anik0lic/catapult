@@ -7,6 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import raf.rma.catapult.photos.api.PhotosApi
 import retrofit2.Retrofit
 import retrofit2.create
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -15,5 +16,5 @@ object PhotosModule {
 
     @Provides
     @Singleton
-    fun providePhotosApi(retrofit: Retrofit): PhotosApi = retrofit.create()
+    fun providePhotosApi(@Named("cat") retrofit: Retrofit): PhotosApi = retrofit.create()
 }

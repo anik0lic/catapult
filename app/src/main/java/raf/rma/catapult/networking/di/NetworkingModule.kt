@@ -10,6 +10,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import raf.rma.catapult.networking.serialization.AppJson
 import retrofit2.Retrofit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -36,11 +37,25 @@ object NetworkingModule {
 
     @Singleton
     @Provides
+    @Named("cat")
     fun provideRetrofitClient(
         okHttpClient: OkHttpClient,
     ) : Retrofit {
         return Retrofit.Builder()
             .baseUrl("https://api.thecatapi.com/v1/")
+            .client(okHttpClient)
+            .addConverterFactory(AppJson.asConverterFactory("application/json".toMediaType()))
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    @Named("leaderboard")
+    fun provideAnotherRetrofitClient(
+        okHttpClient: OkHttpClient,
+    ) : Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("https://rma.finlab.rs")
             .client(okHttpClient)
             .addConverterFactory(AppJson.asConverterFactory("application/json".toMediaType()))
             .build()

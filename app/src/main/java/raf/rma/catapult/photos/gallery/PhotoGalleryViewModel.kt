@@ -23,7 +23,7 @@ class PhotoGalleryViewModel @Inject constructor(
     private val photoRepository: PhotoRepository,
 ) : ViewModel() {
 
-    private val photoId = savedStateHandle.photoId
+//    private val photoId = savedStateHandle.photoId
     private val catId = savedStateHandle.catId
 
     private val _state = MutableStateFlow(PhotoGalleryState())

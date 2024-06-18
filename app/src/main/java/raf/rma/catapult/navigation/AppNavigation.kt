@@ -14,6 +14,7 @@ import androidx.navigation.navArgument
 import raf.rma.catapult.cats.details.catDetails
 import raf.rma.catapult.photos.gallery.photoGallery
 import raf.rma.catapult.cats.list.cats
+import raf.rma.catapult.leaderboard.list.leaderboard
 import raf.rma.catapult.photos.grid.photoGrid
 
 @Composable
@@ -44,7 +45,7 @@ fun AppNavigation() {
 
             },
             onLeaderboardClick = {
-
+                navController.navigate(route = "leaderboard")
             }
         )
 
@@ -81,12 +82,12 @@ fun AppNavigation() {
         )
 
         photoGallery(
-            route = "photo/{photoId}",
+            route = "photo/{catId}",
             arguments = listOf(
-                navArgument(name = "photoId") {
-                    nullable = false
-                    type = NavType.StringType
-                },
+//                navArgument(name = "photoId") {
+//                    nullable = false
+//                    type = NavType.StringType
+//                },
                 navArgument(name = "catId") {
                     nullable = false
                     type = NavType.StringType
@@ -94,6 +95,19 @@ fun AppNavigation() {
             ),
             onClose = {
                 navController.navigateUp()
+            },
+        )
+
+        leaderboard(
+            route = "leaderboard",
+            onCatalogClick = {
+                navController.navigate(route = "cats")
+            },
+            onProfileClick = {
+
+            },
+            onQuizClick = {
+
             },
         )
 
