@@ -1,5 +1,6 @@
 package raf.rma.catapult.photos.gallery
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,43 +10,39 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import raf.rma.catapult.navigation.albumId
-import raf.rma.catapult.photos.db.Photo
-import raf.rma.catapult.photos.gallery.PhotoGalleryContract.AlbumGalleryUiState
-import raf.rma.catapult.photos.gallery.model.PhotoUiModel
-import raf.rma.catapult.photos.repository.PhotosRepository
+import raf.rma.catapult.navigation.catId
+import raf.rma.catapult.navigation.photoId
+import raf.rma.catapult.photos.gallery.PhotoGalleryContract.PhotoGalleryState
+import raf.rma.catapult.photos.mappers.asPhotoUiModel
+import raf.rma.catapult.photos.repository.PhotoRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class PhotoGalleryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val photoRepository: PhotosRepository,
+    private val photoRepository: PhotoRepository,
 ) : ViewModel() {
 
-    private val albumId = savedStateHandle.albumId
+    private val photoId = savedStateHandle.photoId
+    private val catId = savedStateHandle.catId
 
-    private val _state = MutableStateFlow(AlbumGalleryUiState())
+    private val _state = MutableStateFlow(PhotoGalleryState())
     val state = _state.asStateFlow()
-    private fun setState(reducer: AlbumGalleryUiState.() -> AlbumGalleryUiState) = _state.update(reducer)
+    private fun setState(reducer: PhotoGalleryState.() -> PhotoGalleryState) = _state.update(reducer)
 
     init {
-        observeAlbums()
+        observeCatPhotos()
     }
 
-    private fun observeAlbums() {
+    private fun observeCatPhotos() {
         viewModelScope.launch {
-            photoRepository.observeAlbumPhotos(albumId = albumId)
+            photoRepository.observeCatPhotos(catId = catId)
                 .distinctUntilChanged()
                 .collect {
-                    setState { copy(photos = it.map { it.asPhotoUiModel() }) }
+                    setState { copy(photos = it.map { it.asPhotoUiModel(catId = catId) }) }
+                    Log.e("OBSERVE", "Observe cat photos")
                 }
         }
     }
 
-    private fun Photo.asPhotoUiModel() = PhotoUiModel(
-        photoId = this.photoId,
-        title = this.title,
-        url = this.url,
-        thumbnailUrl = this.thumbnailUrl,
-    )
 }

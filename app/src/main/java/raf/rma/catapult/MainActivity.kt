@@ -8,7 +8,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import dagger.hilt.android.AndroidEntryPoint
 import raf.rma.catapult.analytics.AppAnalytics
-import raf.rma.catapult.navigation.AlbumNavigation
+import raf.rma.catapult.navigation.AppNavigation
 import raf.rma.catapult.core.theme.CatapultTheme
 
 @AndroidEntryPoint
@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
                 LocalAnalytics provides analytics
             ) {
                 CatapultTheme {
-                    AlbumNavigation()
+                    AppNavigation()
                 }
             }
         }

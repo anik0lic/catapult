@@ -1,22 +1,22 @@
 package raf.rma.catapult.photos.db
 
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
+import raf.rma.catapult.cats.db.Cat
 
 @Dao
 interface PhotosDao {
 
-    @Upsert
-    fun upsertAllAlbums(data: List<Album>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(list: List<Photo>)
 
-    @Upsert
-    fun upsertAllPhotos(data: List<Photo>)
+    @Query("SELECT * FROM Photo WHERE Photo.catId = :catId")
+    fun observeCatPhotos(catId: String): Flow<List<Photo>>
 
-    @Query("SELECT * FROM Album WHERE Album.userOwnerId = :userId")
-    fun observeUserAlbums(userId: Int): Flow<List<Album>>
-
-    @Query("SELECT * FROM Photo WHERE Photo.albumId = :albumId")
-    fun observeAlbumPhotos(albumId: Int): Flow<List<Photo>>
+//    @Query("SELECT * FROM Photo WHERE Photo.photoId = :photoId")
+//    fun observePhoto(photoId: String): Flow<Photo>
 }

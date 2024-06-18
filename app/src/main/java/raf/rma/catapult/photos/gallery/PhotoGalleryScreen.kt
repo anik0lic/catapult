@@ -1,5 +1,6 @@
 package raf.rma.catapult.photos.gallery
 
+import android.util.Log
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -14,13 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -56,7 +51,7 @@ fun NavGraphBuilder.photoGallery(
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PhotoGalleryScreen(
-    state: PhotoGalleryContract.AlbumGalleryUiState,
+    state: PhotoGalleryContract.PhotoGalleryState,
     onClose: () -> Unit,
 ) {
     val pagerState = rememberPagerState(
@@ -65,7 +60,7 @@ fun PhotoGalleryScreen(
         }
     )
 
-    var currentTitle by remember { mutableStateOf("") }
+//    var currentTitle by remember { mutableStateOf("") }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -73,7 +68,7 @@ fun PhotoGalleryScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = currentTitle,
+                        text = "MACKA",
                         textAlign = TextAlign.Center,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -89,12 +84,12 @@ fun PhotoGalleryScreen(
         },
         content = { paddingValues ->
             if (state.photos.isNotEmpty()) {
-                LaunchedEffect(pagerState) {
-                    snapshotFlow { pagerState.currentPage }.collect { pageIndex ->
-                        val album = state.photos.getOrNull(pageIndex)
-                        currentTitle = album?.title ?: ""
-                    }
-                }
+//                LaunchedEffect(pagerState) {
+//                    snapshotFlow { pagerState.currentPage }.collect { pageIndex ->
+//                        val photos = state.photos.getOrNull(pageIndex)
+//                        currentTitle = photos?.catId ?: ""
+//                    }
+//                }
 
                 HorizontalPager(
                     modifier = Modifier.fillMaxSize(),
@@ -105,10 +100,11 @@ fun PhotoGalleryScreen(
                     key = { state.photos[it].photoId },
                 ) { pageIndex ->
                     val photo = state.photos[pageIndex]
+                    Log.e("SLIKA", photo.photoId)
                     PhotoPreview(
                         modifier = Modifier,
                         url = photo.url,
-                        title = photo.title,
+                        title = photo.catId,
                         showTitle = false,
                     )
                 }
@@ -116,7 +112,7 @@ fun PhotoGalleryScreen(
             } else {
                 Text(
                     modifier = Modifier.fillMaxSize(),
-                    text = "No albums.",
+                    text = "No photos.",
                 )
             }
         },

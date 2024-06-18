@@ -1,9 +1,9 @@
 package raf.rma.catapult.photos.gallery
 
-import raf.rma.catapult.photos.gallery.model.PhotoUiModel
+import raf.rma.catapult.photos.model.PhotoUiModel
 
 interface PhotoGalleryContract {
-    data class AlbumGalleryUiState(
+    data class PhotoGalleryState(
         val photos: List<PhotoUiModel> = emptyList(),
     )
 }
