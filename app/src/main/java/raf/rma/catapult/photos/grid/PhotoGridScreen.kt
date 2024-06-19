@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -24,12 +25,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import coil.compose.SubcomposeAsyncImage
 import raf.rma.catapult.core.compose.AppIconButton
 import raf.rma.catapult.core.compose.PhotoPreview
 import raf.rma.catapult.photos.model.PhotoUiModel
@@ -110,13 +113,18 @@ fun PhotoGridScreen(
                                 modifier = Modifier
                                     .size(cellSize)
                                     .clickable {
-                                        onPhotoClick(photo.photoId)
+                                        onPhotoClick(photo.catId)
+//                                        onPhotoClick(photo.photoId)
                                     }
                             ){
-                                PhotoPreview(
-                                    modifier = Modifier.fillMaxSize(),
-                                    url = photo.url,
-                                    title = photo.catId,
+                                SubcomposeAsyncImage(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(280.dp)
+                                        .align(Alignment.CenterHorizontally),
+                                    model = photo.url,
+                                    contentScale = ContentScale.Crop,
+                                    contentDescription = null,
                                 )
                             }
 

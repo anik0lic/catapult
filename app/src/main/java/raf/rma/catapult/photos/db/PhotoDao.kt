@@ -15,6 +15,9 @@ interface PhotoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(list: List<Photo>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(photo: Photo)
+
     @Query("SELECT * FROM Photo WHERE Photo.catId = :catId")
     fun observeCatPhotos(catId: String): Flow<List<Photo>>
 
@@ -24,6 +27,6 @@ interface PhotoDao {
     @Query("SELECT * FROM Photo WHERE Photo.catId = :catId")
     suspend fun getPhotosByCatId(catId: String): List<Photo>
 
-//    @Query("SELECT * FROM Photo WHERE Photo.photoId = :photoId")
-//    fun observePhoto(photoId: String): Flow<Photo>
+    @Query("SELECT * FROM Photo WHERE Photo.photoId = :photoId")
+    fun observePhoto(photoId: String): Flow<Photo>
 }

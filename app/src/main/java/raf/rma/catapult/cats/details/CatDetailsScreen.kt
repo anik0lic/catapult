@@ -48,6 +48,7 @@ import raf.rma.catapult.cats.model.CatUiModel
 import raf.rma.catapult.core.compose.AppIconButton
 import raf.rma.catapult.core.theme.LightOrange
 import raf.rma.catapult.core.theme.Orange
+import raf.rma.catapult.photos.model.PhotoUiModel
 
 fun NavGraphBuilder.catDetails(
     route: String,
@@ -123,11 +124,11 @@ fun CatDetailsScreen(
                         Text(text = "Something went wrong while fetching the data")
                     }
                 } else if (state.cat != null) {
-                    state.cat.referenceImageId.let {
+                    state.photo?.let {
                         BreedsDataColumn(
                             data = state.cat,
-                            onGalleryClick = onGalleryClick
-//                            image = it
+                            onGalleryClick = onGalleryClick,
+                            photo = it
                         )
                     }
                 } else {
@@ -141,23 +142,23 @@ fun CatDetailsScreen(
 @Composable
 private fun BreedsDataColumn(
     data: CatUiModel,
-    onGalleryClick: (String) -> Unit
-//    image: ImageUiModel
+    onGalleryClick: (String) -> Unit,
+    photo: PhotoUiModel
 ) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
             .verticalScroll(scrollState),
     ) {
-//        SubcomposeAsyncImage(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(280.dp)
-//                .align(Alignment.CenterHorizontally),
-//            model = image.url,
-//            contentScale = ContentScale.Crop,
-//            contentDescription = null,
-//        )
+        SubcomposeAsyncImage(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(280.dp)
+                .align(Alignment.CenterHorizontally),
+            model = photo.url,
+            contentScale = ContentScale.Crop,
+            contentDescription = null,
+        )
         HorizontalDivider(thickness = 1.dp, color = Orange)
         Spacer(modifier = Modifier.height(8.dp))
         Text(

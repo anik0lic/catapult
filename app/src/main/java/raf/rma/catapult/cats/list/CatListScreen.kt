@@ -56,6 +56,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -65,6 +66,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kotlinx.coroutines.launch
 import raf.rma.catapult.LocalAnalytics
+import raf.rma.catapult.R
 import raf.rma.catapult.cats.list.CatListContract.CatListState
 import raf.rma.catapult.cats.list.CatListContract.CatListUiEvent
 import raf.rma.catapult.core.compose.AppDrawerActionItem
@@ -227,8 +229,11 @@ private fun CatListDrawer(
                 ){
                     Text(
                         modifier = Modifier.padding(all = 16.dp),
-                        text = "Catapult",
-//                        style = CatapultTheme.typography.headlineSmall,
+                        text = "Menu",
+                        style = TextStyle(
+                            fontSize = 30.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
                     )
                 }
 
@@ -307,11 +312,6 @@ private fun CatListScaffold(
                         )
                     },
                     navigationIcon = {
-//                        Image(
-//                            painter = painterResource(id = R.drawable.cat_logo),
-//                            contentDescription = "logo",
-//                            modifier = Modifier
-//                        ),
                         AppIconButton(
                             imageVector = Icons.Default.Menu,
                             onClick = onDrawerMenuClick,
@@ -320,6 +320,13 @@ private fun CatListScaffold(
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = LightOrange
                     ),
+                    actions = {
+                        Image(
+                            painter = painterResource(id = R.drawable.cat_logo),
+                            contentDescription = "logo",
+                            modifier = Modifier
+                        )
+                    },
                     scrollBehavior = scrollBehavior
                 )
                 SearchBar(
@@ -364,24 +371,23 @@ private fun CatListScaffold(
                             .padding(horizontal = 8.dp)
                             .clickable { onCatClick(it.id) },
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
+                        Column {
                             Text(
                                 modifier = Modifier
                                     .padding(horizontal = 16.dp)
-                                    .padding(vertical = 16.dp)
-                                    .weight(1f),
+                                    .padding(vertical = 10.dp),
                                 text = it.name,
                                 style = TextStyle(
                                     fontSize = 21.sp,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = Orange
                                 )
-//                                style = MaterialTheme.typography.headlineSmall,
                             )
 
-                            Spacer(modifier = Modifier.height(8.dp))
                             Text(
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp)
+                                    .padding(vertical = 16.dp),
                                 text = it.description.take(250).plus("..."),
                                 style = TextStyle(
                                     fontSize = 18.sp,
@@ -398,6 +404,7 @@ private fun CatListScaffold(
                     onClick = {
                         uiScope.launch { listState.animateScrollToItem(index = 0) }
                     },
+                    containerColor = Orange
                 ) {
                     Image(imageVector = Icons.Default.KeyboardArrowUp, contentDescription = null)
                 }
@@ -405,17 +412,6 @@ private fun CatListScaffold(
         },
     )
 }
-
-//@Preview
-//@Composable
-//fun PreviewUserListScreen() {
-//    CatapultTheme {
-//        CatListScreen(state = CatListState(cats = SampleData), onUserClick = {}, onProfileClick = { /*TODO*/ }) {
-//
-//        }
-//    }
-//}
-
 
 
 

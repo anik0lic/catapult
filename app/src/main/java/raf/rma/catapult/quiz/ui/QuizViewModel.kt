@@ -169,14 +169,18 @@ class QuizViewModel @Inject constructor(
         val questions = mutableListOf<QuizQuestion>()
         Log.d("QUIZ", "Question cats: $questionCats")
         questionCats.forEach { cat ->
-            val photos = photoRepository.getAllPhotos().filter { it.catId == cat.id }.shuffled()
+            var photos = photoRepository.getAllPhotos().filter { it.catId == cat.id }.shuffled()
+            if(photos.isEmpty()){
+                photoRepository.fetchPhoto(cat.referenceImageId, cat.id)
+            }
+            photos = photoRepository.getAllPhotos().filter { it.catId == cat.id }.shuffled()
             Log.d("QUIZ", "Question Photos: $photos")
             when ((1..3).random()) {
-                1 -> if (photos.isNotEmpty()) {
+                1 -> {
                     val incorrectAnswers = cats.filter { it.id != cat.id }
-                        .shuffled()
-                        .take(3)
-                        .map { it.name }
+                    .shuffled()
+                    .take(3)
+                    .map { it.name }
 
                     questions.add(
                         QuizQuestion(
@@ -190,7 +194,7 @@ class QuizViewModel @Inject constructor(
                     )
                 }
 
-                2 -> if (photos.isNotEmpty()) {
+                2 -> {
                     val incorrectAnswers = cats.filter { it.origin != cat.origin }
                         .shuffled()
                         .take(3)
@@ -208,7 +212,7 @@ class QuizViewModel @Inject constructor(
                     )
                 }
 
-                3 -> if (photos.isNotEmpty()) {
+                3 -> {
                     val incorrectAnswers =
                         cats.filter { it.temperament != cat.temperament }
                             .shuffled()

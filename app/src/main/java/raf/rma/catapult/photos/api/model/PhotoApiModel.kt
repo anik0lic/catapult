@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PhotoApiModel (
     @SerialName("id") val photoId: String,
-//    val catId: String,
     val url: String,
     val width: Int,
     val height: Int,

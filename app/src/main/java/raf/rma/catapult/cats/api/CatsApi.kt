@@ -1,6 +1,7 @@
 package raf.rma.catapult.cats.api
 
 import raf.rma.catapult.cats.api.model.CatApiModel
+import raf.rma.catapult.photos.api.model.PhotoApiModel
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -13,9 +14,4 @@ interface CatsApi {
 //    suspend fun fetchCat(
 //        @Path("id") catId: String,
 //    ): CatApiModel
-
-//    @GET("users/{id}/albums")
-//    suspend fun getUserAlbums(
-//        @Path("id") userId: Int,
-//    ): List<AlbumApiModel>
 }

@@ -23,8 +23,4 @@ class CatsRepository @Inject constructor(
 
     fun observeCats() = database.catsDao().observeCats()
     fun observeCatDetails(catId: String) = database.catsDao().observeCatDetails(catId = catId)
-//
-//    suspend fun getUserWithAlbums(userId: Int): UserWithAlbums {
-//        return database.userDao().getUserWithAlbums(userId = userId)
-//    }
 }

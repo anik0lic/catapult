@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -14,12 +15,16 @@ import raf.rma.catapult.cats.details.CatDetailsContract.CatDetailsState
 import raf.rma.catapult.cats.mappers.asCatUiModel
 import raf.rma.catapult.cats.repository.CatsRepository
 import raf.rma.catapult.navigation.catId
+import raf.rma.catapult.photos.mappers.asPhotoUiModel
+import raf.rma.catapult.photos.repository.PhotoRepository
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
 class CatDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val repository: CatsRepository
+    private val catsRepository: CatsRepository,
+    private val photoRepository: PhotoRepository
 ) : ViewModel() {
 
     private val catId: String = savedStateHandle.catId
@@ -31,6 +36,7 @@ class CatDetailsViewModel @Inject constructor(
     init {
         fetchCatDetails()
         observeCatDetails()
+        getImage()
     }
 
     private fun fetchCatDetails(){
@@ -38,7 +44,7 @@ class CatDetailsViewModel @Inject constructor(
             setState { copy(loading = true) }
             try {
                 withContext(Dispatchers.IO) {
-                    repository.getCatDetails(catId = catId)
+                    catsRepository.getCatDetails(catId = catId)
                 }
             } catch (error: Exception) {
                 setState { copy(error = true) }
@@ -48,12 +54,40 @@ class CatDetailsViewModel @Inject constructor(
         }
     }
 
+    private fun fetchImage(photoId: String, catId: String){
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    photoRepository.fetchPhoto(photoId = photoId, catId = catId)
+                }
+            } catch (error: IOException) {
+                setState { copy(error = true) }
+            }
+        }
+    }
+
+    private fun getImage(){
+        viewModelScope.launch {
+            try {
+                val photo = withContext(Dispatchers.IO) {
+                    photoRepository.getPhotosByCatId(catId)[0].asPhotoUiModel()
+                }
+                setState { copy(photo = photo) }
+            } catch (error: IOException) {
+                setState { copy(error = true) }
+            }
+        }
+    }
+
     private fun observeCatDetails() {
         viewModelScope.launch {
-            repository.observeCatDetails(catId = catId)
+            catsRepository.observeCatDetails(catId = catId)
+                .distinctUntilChanged()
                 .collect {
                     setState { copy(cat = it.asCatUiModel()) }
+                    fetchImage(it.referenceImageId, it.id)
                 }
         }
     }
+
 }

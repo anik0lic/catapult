@@ -40,7 +40,7 @@ class PhotoGalleryViewModel @Inject constructor(
                 .distinctUntilChanged()
                 .collect {
                     setState { copy(photos = it.map { it.asPhotoUiModel() }) }
-                    Log.e("OBSERVE", "Observe cat photos")
+                    Log.e("OBSERVE", "Observe cat photos ${state.value.photos}")
                 }
         }
     }

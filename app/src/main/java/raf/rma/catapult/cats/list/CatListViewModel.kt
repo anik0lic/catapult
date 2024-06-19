@@ -19,12 +19,13 @@ import raf.rma.catapult.cats.list.CatListContract.CatListUiEvent
 import raf.rma.catapult.cats.list.CatListContract.CatListState
 import raf.rma.catapult.cats.mappers.asCatUiModel
 import raf.rma.catapult.cats.repository.CatsRepository
+import raf.rma.catapult.photos.repository.PhotoRepository
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class CatListViewModel @Inject constructor(
-    private val repository: CatsRepository
+    private val catsRepository: CatsRepository
 ) : ViewModel(){
 
     private val _state = MutableStateFlow(CatListState())
@@ -44,7 +45,7 @@ class CatListViewModel @Inject constructor(
     private fun observeCats(){
         viewModelScope.launch {
             setState { copy(loading = true) }
-            repository.observeCats()
+            catsRepository.observeCats()
                 .distinctUntilChanged()
                 .collect {
                     setState {
@@ -62,7 +63,7 @@ class CatListViewModel @Inject constructor(
             setState { copy(loading = true) }
             try {
                 withContext(Dispatchers.IO) {
-                    repository.fetchAllCats()
+                    catsRepository.fetchAllCats()
                     Log.e("FETCH", "Fetch Cats")
                 }
             } catch (error: Exception) {

@@ -88,10 +88,10 @@ fun LeaderboardListScreen(
     val uiScope = rememberCoroutineScope()
     val drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed)
 
-    val analytics = LocalAnalytics.current
-    SideEffect {
-        analytics.log("Neka poruka")
-    }
+//    val analytics = LocalAnalytics.current
+//    SideEffect {
+//        analytics.log("Neka poruka")
+//    }
 
     BackHandler(enabled = drawerState.isOpen){
         uiScope.launch { drawerState.close() }
@@ -194,8 +194,11 @@ private fun LeaderboardListDrawer(
                 ){
                     Text(
                         modifier = Modifier.padding(all = 16.dp),
-                        text = "Catapult",
-//                        style = CatapultTheme.typography.headlineSmall,
+                        text = "Menu",
+                        style = TextStyle(
+                            fontSize = 30.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
                     )
                 }
 

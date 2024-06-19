@@ -12,7 +12,7 @@ class PhotoRepository @Inject constructor(
 ) {
 
     suspend fun fetchCatPhotos(catId: String) {
-        val allPhotos = photosApi.getPhotos(catId = catId)
+        val allPhotos = photosApi.fetchPhotos(catId = catId)
             .map { it.asPhotoDbModel(catId) }
             .toMutableList()
 
@@ -21,10 +21,17 @@ class PhotoRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchPhoto(photoId: String, catId: String) {
+        val photo = photosApi.fetchPhotoById(photoId = photoId).asPhotoDbModel(catId)
+        database.photoDao().insert(photo)
+    }
+
     suspend fun getAllPhotos() = database.photoDao().getAll()
+
+    suspend fun getPhotosByCatId(catId: String) = database.photoDao().getPhotosByCatId(catId = catId)
 
     fun observeCatPhotos(catId: String) = database.photoDao().observeCatPhotos(catId = catId)
     fun observePhotos() = database.photoDao().observePhotos()
 
-//    fun observePhoto(photoId: String) = database.photoDao().observePhoto(photoId = photoId)
+    fun observePhoto(photoId: String) = database.photoDao().observePhoto(photoId = photoId)
 }
