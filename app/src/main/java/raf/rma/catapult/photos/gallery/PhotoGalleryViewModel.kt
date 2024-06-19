@@ -39,7 +39,7 @@ class PhotoGalleryViewModel @Inject constructor(
             photoRepository.observeCatPhotos(catId = catId)
                 .distinctUntilChanged()
                 .collect {
-                    setState { copy(photos = it.map { it.asPhotoUiModel(catId = catId) }) }
+                    setState { copy(photos = it.map { it.asPhotoUiModel() }) }
                     Log.e("OBSERVE", "Observe cat photos")
                 }
         }

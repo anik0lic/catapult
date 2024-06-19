@@ -21,7 +21,10 @@ class PhotoRepository @Inject constructor(
         }
     }
 
+    suspend fun getAllPhotos() = database.photoDao().getAll()
+
     fun observeCatPhotos(catId: String) = database.photoDao().observeCatPhotos(catId = catId)
+    fun observePhotos() = database.photoDao().observePhotos()
 
 //    fun observePhoto(photoId: String) = database.photoDao().observePhoto(photoId = photoId)
 }

@@ -10,11 +10,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import raf.rma.catapult.analytics.AppAnalytics
 import raf.rma.catapult.navigation.AppNavigation
 import raf.rma.catapult.core.theme.CatapultTheme
+import raf.rma.catapult.profile.datastore.ProfileDataStore
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val analytics = AppAnalytics()
+    @Inject lateinit var profileDataStore: ProfileDataStore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +28,7 @@ class MainActivity : ComponentActivity() {
                 LocalAnalytics provides analytics
             ) {
                 CatapultTheme {
-                    AppNavigation()
+                    AppNavigation(profileDataStore)
                 }
             }
         }

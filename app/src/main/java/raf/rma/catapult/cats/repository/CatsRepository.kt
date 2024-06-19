@@ -15,6 +15,8 @@ class CatsRepository @Inject constructor(
         database.catsDao().insertAll(list = cats.map { it.asCatDbModel() })
     }
 
+    suspend fun getAllCats() = database.catsDao().getAll()
+
     suspend fun getCatDetails(catId: String){
         database.catsDao().getCatById(catId = catId)
     }

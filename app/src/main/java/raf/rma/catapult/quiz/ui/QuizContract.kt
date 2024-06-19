@@ -1,0 +1,27 @@
+package raf.rma.catapult.quiz.ui
+
+import raf.rma.catapult.cats.model.CatUiModel
+import raf.rma.catapult.photos.model.PhotoUiModel
+import raf.rma.catapult.quiz.model.QuizQuestion
+
+interface QuizContract {
+    data class QuizState(
+        val questions: List<QuizQuestion> = emptyList(),
+        val loading: Boolean = false,
+        val currentQuestionIndex: Int = 0,
+        val correctAnswers: Int = 0,
+        val selectedOption: String? = null,
+        val quizFinished: Boolean = false,
+        val score: Float = 0f,
+        val timeRemaining: Long = 300000L,
+        val error: Exception? = null,
+        val showExitDialog: Boolean = false
+    )
+    sealed class QuizEvent {
+        data object NextQuestion : QuizEvent()
+        data object StopQuiz: QuizEvent()
+        data object ContinueQuiz: QuizEvent()
+        data object FinishQuiz : QuizEvent()
+        data class OptionSelected(val optionIndex: Int) : QuizEvent()
+    }
+}

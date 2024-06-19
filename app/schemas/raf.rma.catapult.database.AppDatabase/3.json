@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 1,
-    "identityHash": "934470950e5eb54c89fc36e0cf6fed1c",
+    "version": 3,
+    "identityHash": "8da6cbde77b2e015113acc8e84e1e4df",
     "entities": [
       {
         "tableName": "Cat",
@@ -154,7 +154,7 @@
       },
       {
         "tableName": "quiz_results",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nickname` TEXT NOT NULL, `score` REAL NOT NULL, `date` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nickname` TEXT NOT NULL, `score` REAL NOT NULL, `date` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -177,7 +177,7 @@
           {
             "fieldPath": "date",
             "columnName": "date",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -194,7 +194,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '934470950e5eb54c89fc36e0cf6fed1c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8da6cbde77b2e015113acc8e84e1e4df')"
     ]
   }
 }

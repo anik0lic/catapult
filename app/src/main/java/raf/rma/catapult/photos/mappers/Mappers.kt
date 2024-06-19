@@ -14,10 +14,10 @@ fun PhotoApiModel.asPhotoDbModel(catId: String): Photo {
     )
 }
 
-fun Photo.asPhotoUiModel(catId: String): PhotoUiModel {
+fun Photo.asPhotoUiModel(): PhotoUiModel {
     return PhotoUiModel(
         photoId = this.photoId,
-        catId = catId,
+        catId = this.catId,
         url = this.url,
         width = this.width,
         height = this.height,
