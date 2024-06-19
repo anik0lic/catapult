@@ -166,9 +166,6 @@ fun AppNavigation(profileDataStore: ProfileDataStore) {
 
             profile(
                 route = "profile",
-                onEditClick = {
-                    navController.navigate(route = "profile/edit")
-                },
                 onCatalogClick = {
                     navController.navigate(route = "cats")
                 },

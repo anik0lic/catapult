@@ -1,6 +1,7 @@
 package raf.rma.catapult.profile.details
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -20,17 +21,20 @@ import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Quiz
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -42,8 +46,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -51,16 +60,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kotlinx.coroutines.launch
+import raf.rma.catapult.R
 import raf.rma.catapult.cats.list.CatListContract.CatListUiEvent
 import raf.rma.catapult.core.compose.AppDrawerActionItem
 import raf.rma.catapult.core.compose.AppIconButton
 import raf.rma.catapult.core.theme.LightOrange
+import raf.rma.catapult.core.theme.Orange
 import raf.rma.catapult.profile.details.ProfileContract.ProfileEvent
 import raf.rma.catapult.profile.details.ProfileContract.ProfileState
 
 fun NavGraphBuilder.profile(
     route: String,
-    onEditClick: () -> Unit,
     onCatalogClick: () -> Unit,
     onQuizClick: () -> Unit,
     onLeaderboardClick: () -> Unit
@@ -72,7 +82,6 @@ fun NavGraphBuilder.profile(
 
     ProfileScreen(
         state = state.value,
-        onEditClick = onEditClick,
         onCatalogClick = onCatalogClick,
         onQuizClick = onQuizClick,
         onLeaderboardClick = onLeaderboardClick,
@@ -85,7 +94,6 @@ fun NavGraphBuilder.profile(
 @Composable
 fun ProfileScreen(
     state: ProfileState,
-    onEditClick: () -> Unit,
     onCatalogClick: () -> Unit,
     onQuizClick: () -> Unit,
     onLeaderboardClick: () -> Unit,
@@ -233,30 +241,53 @@ private fun ProfileScaffold(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = LightOrange
-                )
+                ),
+                actions = {
+                    Image(
+                        painter = painterResource(id = R.drawable.cat_logo),
+                        contentDescription = "logo",
+                        modifier = Modifier
+                    )
+                },
             )
         },
         content = { paddingValues ->
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
                     .padding(paddingValues)
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Center
             ) {
                 TextField(
+                    modifier = Modifier
+                        .padding(top = 20.dp)
+                        .fillMaxWidth(),
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        unfocusedIndicatorColor = Orange,
+                    ),
                     value = state.name,
                     onValueChange = {  },
                     label = { Text("Name") },
                     readOnly = true
                 )
                 TextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        unfocusedIndicatorColor = Orange,
+                    ),
                     value = state.nickname,
                     onValueChange = {  },
                     label = { Text("Nickname") },
                     readOnly = true
                 )
                 TextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        unfocusedIndicatorColor = Orange,
+                    ),
                     value = state.email,
                     onValueChange = {  },
                     label = { Text("Email") },
@@ -270,34 +301,75 @@ private fun ProfileScaffold(
                 var newNickname by remember(state.nickname) { mutableStateOf(state.nickname) }
                 var newEmail by remember(state.email) { mutableStateOf(state.email) }
 
-                Button(onClick = {
-                    showDialog = true
-                }) {
-                    Text("Edit Profile")
+                Button(
+                    onClick = {
+                        showDialog = true
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Orange,
+                        contentColor = Color.White,
+                    )
+                ) {
+                    Text(
+                        text = "Edit Profile",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 2.sp,
+                        ),
+                    )
                 }
 
                 if (showDialog) {
                     Dialog(onDismissRequest = { showDialog = false }) {
                         Column {
+                            //TODO validacija
                             TextField(
                                 value = newName,
                                 onValueChange = { newName = it },
-                                label = { Text("New Name") }
+                                modifier = Modifier.fillMaxWidth(),
+                                label = { Text("New Name") },
+                                colors = TextFieldDefaults.colors(
+                                    unfocusedContainerColor = Color.White,
+                                    unfocusedIndicatorColor = Orange,
+                                ),
                             )
                             TextField(
                                 value = newNickname,
                                 onValueChange = { newNickname = it },
-                                label = { Text("New Nickname") }
+                                modifier = Modifier.fillMaxWidth(),
+                                label = { Text("New Nickname") },
+                                colors = TextFieldDefaults.colors(
+                                    unfocusedContainerColor = Color.White,
+                                    unfocusedIndicatorColor = Orange,
+                                ),
                             )
                             TextField(
                                 value = newEmail,
                                 onValueChange = { newEmail = it },
-                                label = { Text("New Email") }
+                                modifier = Modifier.fillMaxWidth(),
+                                label = { Text("New Email") },
+                                colors = TextFieldDefaults.colors(
+                                    unfocusedContainerColor = Color.White,
+                                    unfocusedIndicatorColor = Orange,
+                                ),
                             )
-                            Button(onClick = {
-                                eventPublisher(ProfileEvent.EditProfile(newName, newNickname, newEmail))
-                                showDialog = false
-                            }) {
+                            Button(
+                                onClick = {
+                                    eventPublisher(ProfileEvent.EditProfile(newName, newNickname, newEmail))
+                                    showDialog = false
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Orange,
+                                    contentColor = Color.White,
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 20.dp),
+                            ) {
                                 Text("Save")
                             }
                         }
@@ -306,18 +378,74 @@ private fun ProfileScaffold(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Best Score: ${state.bestScore}")
-                Text("Best Position: ${state.bestPosition}")
+                Text(
+                    text = "Best Score: ${state.bestScore}",
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.sp,
+                    ),
+                )
+                Text(
+                    text = "Best Position: ${state.bestPosition}",
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.sp,
+                    ),
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (state.quizResults.isEmpty()) {
-                    Text("No quiz results")
+                    Text(
+                        text = "No quiz results",
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.sp,
+                        ),
+                    )
                 } else {
                     Column {
-                        Text("Quiz Results:")
+                        Text(
+                            text = "Quiz Results:",
+                            modifier = Modifier
+                                .padding(horizontal = 10.dp)
+                                .padding(bottom = 5.dp),
+                            style = TextStyle(
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.sp,
+                            ),
+                        )
                         state.quizResults.forEach { result ->
-                            Text("Score: ${result.score}, Date: ${result.date}")
+                            val date = result.date.split(" ").take(4).joinToString(" ")
+                            val boldStyle = SpanStyle(fontWeight = FontWeight.Bold)
+                            val annotatedText = buildAnnotatedString {
+                                withStyle(style = boldStyle){
+                                    append("Score: ")
+                                }
+                                append(result.score.toString())
+                                append(", ")
+                                withStyle(style = boldStyle){
+                                    append("Date: ")
+                                }
+                                append(date)
+                            }
+                            Text(
+                                text = annotatedText,
+                                // Wed Jun 19 22:16:26 GMT+2.00 2024
+                                modifier = Modifier.padding(horizontal = 10.dp),
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+//                                    fontWeight = FontWeight.Bold,
+//                                    letterSpacing = 2.sp,
+                                ),
+                            )
                         }
                     }
                 }
