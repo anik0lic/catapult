@@ -26,11 +26,14 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -68,6 +71,7 @@ import raf.rma.catapult.core.theme.LightOrange
 import raf.rma.catapult.core.theme.Orange
 import raf.rma.catapult.profile.details.ProfileContract.ProfileEvent
 import raf.rma.catapult.profile.details.ProfileContract.ProfileState
+import raf.rma.catapult.profile.login.LoginContract.LoginEvent
 
 fun NavGraphBuilder.profile(
     route: String,
@@ -164,12 +168,20 @@ private fun ProfileDrawer(
                     contentAlignment = Alignment.BottomStart
                 ){
                     Text(
-                        modifier = Modifier.padding(all = 16.dp),
+                        modifier = Modifier
+                            .padding(bottom = 10.dp)
+                            .padding(horizontal = 16.dp),
                         text = "Menu",
                         style = TextStyle(
                             fontSize = 30.sp,
                             fontWeight = FontWeight.Bold,
                         )
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .padding(bottom = 5.dp)
+                            .fillMaxWidth(),
+                        color = Orange
                     )
                 }
 
@@ -188,7 +200,12 @@ private fun ProfileDrawer(
                         selected = true,
                         onClick = {
 
-                        }
+                        },
+                        colors = NavigationDrawerItemDefaults.colors(
+                            selectedContainerColor = Orange,
+                            selectedTextColor = Color.White,
+                            selectedIconColor = Color.White
+                        )
                     )
 
                     AppDrawerActionItem(
@@ -261,10 +278,13 @@ private fun ProfileScaffold(
                 TextField(
                     modifier = Modifier
                         .padding(top = 20.dp)
+                        .padding(horizontal = 15.dp)
                         .fillMaxWidth(),
                     colors = TextFieldDefaults.colors(
                         unfocusedContainerColor = Color.Transparent,
                         unfocusedIndicatorColor = Orange,
+                        focusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Orange,
                     ),
                     value = state.name,
                     onValueChange = {  },
@@ -272,10 +292,14 @@ private fun ProfileScaffold(
                     readOnly = true
                 )
                 TextField(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(horizontal = 15.dp)
+                        .fillMaxWidth(),
                     colors = TextFieldDefaults.colors(
                         unfocusedContainerColor = Color.Transparent,
                         unfocusedIndicatorColor = Orange,
+                        focusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Orange,
                     ),
                     value = state.nickname,
                     onValueChange = {  },
@@ -283,10 +307,14 @@ private fun ProfileScaffold(
                     readOnly = true
                 )
                 TextField(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(horizontal = 15.dp)
+                        .fillMaxWidth(),
                     colors = TextFieldDefaults.colors(
                         unfocusedContainerColor = Color.Transparent,
                         unfocusedIndicatorColor = Orange,
+                        focusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Orange,
                     ),
                     value = state.email,
                     onValueChange = {  },
@@ -326,37 +354,72 @@ private fun ProfileScaffold(
                 if (showDialog) {
                     Dialog(onDismissRequest = { showDialog = false }) {
                         Column {
-                            //TODO validacija
                             TextField(
                                 value = newName,
-                                onValueChange = { newName = it },
+                                onValueChange = {
+                                    eventPublisher(ProfileEvent.OnNameChange(it))
+                                    newName = it
+                                },
+                                isError = !state.isNameValid,
                                 modifier = Modifier.fillMaxWidth(),
                                 label = { Text("New Name") },
                                 colors = TextFieldDefaults.colors(
                                     unfocusedContainerColor = Color.White,
                                     unfocusedIndicatorColor = Orange,
+                                    focusedContainerColor = Color.White,
+                                    focusedIndicatorColor = Orange,
                                 ),
                             )
+                            if (!state.isNameValid) {
+                                Text(
+                                    text = "Name cannot be empty",
+                                    color = Color.White
+                                )
+                            }
                             TextField(
                                 value = newNickname,
-                                onValueChange = { newNickname = it },
+                                onValueChange = {
+                                    eventPublisher(ProfileEvent.OnNicknameChange(it))
+                                    newNickname = it
+                                },
                                 modifier = Modifier.fillMaxWidth(),
+                                isError = !state.isNicknameValid,
                                 label = { Text("New Nickname") },
                                 colors = TextFieldDefaults.colors(
                                     unfocusedContainerColor = Color.White,
                                     unfocusedIndicatorColor = Orange,
+                                    focusedContainerColor = Color.White,
+                                    focusedIndicatorColor = Orange,
                                 ),
                             )
+                            if (!state.isNicknameValid) {
+                                Text(
+                                    text = "Nickname can only contain letters, numbers, and underscores",
+                                    color = Color.White
+                                )
+                            }
                             TextField(
                                 value = newEmail,
-                                onValueChange = { newEmail = it },
+                                onValueChange = {
+                                    eventPublisher(ProfileEvent.OnEmailChange(it))
+                                    newEmail = it
+                                },
                                 modifier = Modifier.fillMaxWidth(),
+                                isError = !state.isEmailValid,
                                 label = { Text("New Email") },
                                 colors = TextFieldDefaults.colors(
                                     unfocusedContainerColor = Color.White,
                                     unfocusedIndicatorColor = Orange,
+                                    focusedContainerColor = Color.White,
+                                    focusedIndicatorColor = Orange,
                                 ),
                             )
+                            if (!state.isEmailValid) {
+                                Text(
+                                    text = "Enter a valid email address",
+                                    color = Color.White
+                                )
+                            }
                             Button(
                                 onClick = {
                                     eventPublisher(ProfileEvent.EditProfile(newName, newNickname, newEmail))
@@ -365,10 +428,13 @@ private fun ProfileScaffold(
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Orange,
                                     contentColor = Color.White,
+                                    disabledContainerColor = Color.Gray,
                                 ),
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .padding(top = 10.dp)
                                     .padding(horizontal = 20.dp),
+                                enabled = state.isNameValid && state.isNicknameValid && state.isEmailValid
                             ) {
                                 Text("Save")
                             }
@@ -438,12 +504,11 @@ private fun ProfileScaffold(
                             }
                             Text(
                                 text = annotatedText,
-                                // Wed Jun 19 22:16:26 GMT+2.00 2024
-                                modifier = Modifier.padding(horizontal = 10.dp),
+                                modifier = Modifier
+                                    .padding(top = 5.dp)
+                                    .padding(horizontal = 10.dp),
                                 style = TextStyle(
                                     fontSize = 16.sp,
-//                                    fontWeight = FontWeight.Bold,
-//                                    letterSpacing = 2.sp,
                                 ),
                             )
                         }

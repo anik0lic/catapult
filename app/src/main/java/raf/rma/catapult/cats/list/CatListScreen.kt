@@ -36,10 +36,12 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -228,12 +230,20 @@ private fun CatListDrawer(
                     contentAlignment = Alignment.BottomStart
                 ){
                     Text(
-                        modifier = Modifier.padding(all = 16.dp),
+                        modifier = Modifier
+                            .padding(bottom = 10.dp)
+                            .padding(horizontal = 16.dp),
                         text = "Menu",
                         style = TextStyle(
                             fontSize = 30.sp,
                             fontWeight = FontWeight.Bold,
                         )
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .padding(bottom = 5.dp)
+                            .fillMaxWidth(),
+                        color = Orange
                     )
                 }
 
@@ -258,7 +268,12 @@ private fun CatListDrawer(
                         selected = true,
                         onClick = {
 
-                        }
+                        },
+                        colors = NavigationDrawerItemDefaults.colors(
+                            selectedContainerColor = Orange,
+                            selectedTextColor = Color.White,
+                            selectedIconColor = Color.White
+                        )
                     )
 
                     AppDrawerActionItem(

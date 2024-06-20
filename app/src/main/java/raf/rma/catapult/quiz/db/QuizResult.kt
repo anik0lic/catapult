@@ -10,4 +10,5 @@ data class QuizResult(
     val nickname: String,
     val score: Float,
     val date: String,
+    val ranking: Int? = null
 )

@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class Photo (
     @PrimaryKey val photoId: String,
     val catId: String,
-    val url: String,
+    val url: String? = "",
     val width: Int,
     val height: Int,
 )

@@ -1,6 +1,8 @@
 package raf.rma.catapult.quiz.ui//package raf.rma.catapult.quiz
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -23,19 +25,27 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
+import raf.rma.catapult.core.theme.LightOrange
+import raf.rma.catapult.core.theme.Orange
 import raf.rma.catapult.quiz.model.QuizQuestion
 import raf.rma.catapult.quiz.ui.QuizContract.QuizEvent
 import raf.rma.catapult.quiz.ui.QuizContract.QuizState
@@ -43,11 +53,9 @@ import raf.rma.catapult.quiz.ui.QuizContract.QuizState
 fun NavGraphBuilder.quiz(
     route: String,
     onQuizCompleted: () -> Unit,
-    onClose: () -> Unit,
-    onPublishScore: () -> Unit,
+    onClose: () -> Unit
 ) = composable(
     route = route,
-//    arguments = arguments,
 ) { navBackStackEntry ->
 
     val quizViewModel: QuizViewModel = hiltViewModel(navBackStackEntry)
@@ -61,8 +69,7 @@ fun NavGraphBuilder.quiz(
         },
         onOptionSelected = { option -> quizViewModel.submitAnswer(option) },
         onQuizCompleted = onQuizCompleted,
-        onClose = onClose,
-        onPublishScore = onPublishScore
+        onClose = onClose
     )
 }
 
@@ -73,8 +80,7 @@ fun QuizScreen(
     eventPublisher: (uiEvent: QuizEvent) -> Unit,
     onOptionSelected: (String) -> Unit,
     onQuizCompleted: () -> Unit,
-    onClose: () -> Unit,
-    onPublishScore: () -> Unit
+    onClose: () -> Unit
 ) {
     if (state.showExitDialog) {
         AlertDialog(
@@ -83,14 +89,22 @@ fun QuizScreen(
             text = { Text("Are you sure you want to exit the quiz?") },
             confirmButton = {
                 Button(
-                    onClick = { onClose() }
+                    onClick = { onClose() },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Orange,
+                        contentColor = Color.White,
+                    ),
                 ) {
                     Text("Yes")
                 }
             },
             dismissButton = {
                 Button(
-                    onClick = { eventPublisher(QuizEvent.ContinueQuiz) }
+                    onClick = { eventPublisher(QuizEvent.ContinueQuiz) },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Orange,
+                        contentColor = Color.White,
+                    ),
                 ) {
                     Text("No")
                 }
@@ -100,30 +114,45 @@ fun QuizScreen(
 
     Scaffold(
         topBar = {
-            MediumTopAppBar(
-                title = { Text(text = "Quiz") },
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Quiz",
+                        style = TextStyle(
+                            fontSize = 27.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { eventPublisher(QuizEvent.StopQuiz) }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
                     }
-                },actions = {
+                },
+                actions = {
                     Text(
                         text = "Time remaining: ${state.timeRemaining / 1000} sec",
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding(end = 16.dp)
                     )
-                }
+                }, colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = LightOrange
+                )
             )
         },
         content = { paddingValues ->
             Box(
                 modifier = Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize(),
+                    .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
                 if (state.loading) {
-                    CircularProgressIndicator()
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 } else if (state.questions.isNotEmpty()) {
                     val question = state.questions[state.currentQuestionIndex]
                     QuestionScreen(
@@ -134,7 +163,7 @@ fun QuizScreen(
                     ResultScreen(
                         score = state.score,
                         onFinish = onClose,
-                        onPublish = onPublishScore
+                        eventPublisher = { eventPublisher(it) }
                     )
                 } else {
                     onQuizCompleted()
@@ -160,21 +189,35 @@ fun QuestionScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        BackHandler {
+            quizViewModel.setEvent(QuizEvent.StopQuiz)
+        }
+
         Text(
             text = question.question,
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = 16.dp)
+            style = TextStyle(
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+            ),
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .align(Alignment.CenterHorizontally),
+            textAlign = TextAlign.Center
         )
         if (question.imageUrl != null) {
             Box(
                 modifier = Modifier
-                    .size(200.dp)
-                    .border(2.dp, Color.Gray, RoundedCornerShape(8.dp))
+                    .width(350.dp)
+                    .height(280.dp)
+                    .border(2.dp, Orange)
             ) {
                 Image(
-                    painter = rememberImagePainter(question.imageUrl),
+                    painter = rememberAsyncImagePainter(question.imageUrl),
                     contentDescription = null,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .border(2.dp, Color.Transparent, RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop,
                 )
             }
         }
@@ -185,70 +228,109 @@ fun QuestionScreen(
             val options = question.options
             options.forEach { option ->
                 val buttonColor = when {
-                    state.selectedOption == null -> MaterialTheme.colorScheme.primary
-                    (option == state.selectedOption) && (option == state.questions[state.currentQuestionIndex].correctAnswer) -> Color.Green
-                    (option == state.selectedOption) && (option != state.questions[state.currentQuestionIndex].correctAnswer) -> Color.Red
-                    else -> MaterialTheme.colorScheme.primary
+                    state.selectedOption == null -> LightOrange
+                    option == state.selectedOption && option == state.questions[state.currentQuestionIndex].correctAnswer -> Color.Green
+                    option == state.selectedOption && option != state.questions[state.currentQuestionIndex].correctAnswer -> Color.Red
+                    option != state.selectedOption && option == state.questions[state.currentQuestionIndex].correctAnswer -> Color.Green
+                    else -> LightOrange
                 }
                 Button(
-                    onClick = { if (state.selectedOption == null) onOptionSelected(option) },
+                    onClick = {
+                        if (state.selectedOption == null) onOptionSelected(option)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 32.dp)
-                        .height(48.dp),
+                        .padding(horizontal = 5.dp)
+                        .height(60.dp),
                     shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = buttonColor,
+                        contentColor = Color.Black
+                    ),
+                    border = BorderStroke(2.dp, Orange)
                 ) {
-                    Text(option)
+                    Text(
+                        text = option,
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                        )
+                    )
                 }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultScreen(
     score: Float,
     onFinish: () -> Unit,
-    onPublish: () -> Unit
+    eventPublisher: (uiEvent: QuizEvent) -> Unit,
 ) {
     Scaffold(
-        topBar = {
-            MediumTopAppBar(
-                title = { Text(text = "Quiz Result") }
-            )
-        },
         content = { paddingValues ->
             Box(
                 modifier = Modifier
                     .padding(paddingValues)
+                    .padding(bottom = 100.dp)
                     .fillMaxSize(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.Center,
                 ) {
                     Text(
                         text = "Your Score: $score",
-                        style = MaterialTheme.typography.headlineSmall,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        style = TextStyle(
+                            fontSize = 35.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.sp,
+                        ),
+                        modifier = Modifier.padding(bottom = 30.dp)
                     )
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         Button(
-                            onClick = onPublish,
+                            onClick = {
+                                eventPublisher(QuizEvent.PublishScore(score))
+                                onFinish()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Orange,
+                                contentColor = Color.White,
+                            ),
                             modifier = Modifier.padding(8.dp)
                         ) {
-                            Text("Publish")
+                            Text(
+                                text = "Publish",
+                                style = TextStyle(
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 2.sp,
+                                ),
+                            )
                         }
                         Button(
-                            onClick = onFinish,
+                            onClick = {
+                                eventPublisher(QuizEvent.FinishQuiz)
+                                onFinish()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Orange,
+                                contentColor = Color.White,
+                            ),
                             modifier = Modifier.padding(8.dp)
                         ) {
-                            Text("Finish")
+                            Text(
+                                text = "Finish",
+                                style = TextStyle(
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 2.sp,
+                                ),
+                            )
                         }
                     }
                 }

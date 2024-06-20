@@ -18,10 +18,10 @@ interface QuizContract {
         val showExitDialog: Boolean = false
     )
     sealed class QuizEvent {
-        data object NextQuestion : QuizEvent()
         data object StopQuiz: QuizEvent()
         data object ContinueQuiz: QuizEvent()
         data object FinishQuiz : QuizEvent()
         data class OptionSelected(val optionIndex: Int) : QuizEvent()
+        data class PublishScore(val score: Float) : QuizEvent()
     }
 }

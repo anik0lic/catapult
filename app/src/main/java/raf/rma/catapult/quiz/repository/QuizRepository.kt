@@ -15,9 +15,6 @@ class QuizRepository @Inject constructor(
 
     suspend fun getBestScore(userId: String) = database.quizResultDao().getBestScore(userId)
 
-    suspend fun getBestPosition(userId: String) = database.quizResultDao().getBestPosition(userId) + 1
+    suspend fun getBestPosition(userId: String) = database.quizResultDao().getBestRanking(userId)
 
-    suspend fun getCats() = database.catsDao().getAll()
-
-    suspend fun getPhotos() = database.photoDao().getAll()
 }

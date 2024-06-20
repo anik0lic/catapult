@@ -1,5 +1,7 @@
 package raf.rma.catapult.profile.details
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,18 +40,27 @@ class ProfileViewModel @Inject constructor(
             events.collect { event ->
                 when (event) {
                     is ProfileEvent.EditProfile -> {
-                        if (event.name != state.value.name){
+                        if (event.name != state.value.name && state.value.isNameValid){
                             profileDataStore.updateFullName(event.name)
                             setState { copy(name = event.name) }
                         }
-                        if (event.email != state.value.email) {
+                        if (event.email != state.value.email && state.value.isEmailValid) {
                             profileDataStore.updateEmail(event.email)
                             setState { copy(email = event.email) }
                         }
-                        if (event.nickname != state.value.nickname){
+                        if (event.nickname != state.value.nickname && state.value.isNicknameValid){
                             profileDataStore.updateNickname(event.nickname)
                             setState { copy(nickname = event.nickname) }
                         }
+                    }
+                    is ProfileEvent.OnNameChange -> {
+                        setState { copy(isNameValid = event.name.isNotBlank()) }
+                    }
+                    is ProfileEvent.OnNicknameChange -> {
+                        setState { copy(isNicknameValid = event.nickname.matches(Regex("^[a-zA-Z0-9_]*$"))) }
+                    }
+                    is ProfileEvent.OnEmailChange -> {
+                        setState { copy(isEmailValid = android.util.Patterns.EMAIL_ADDRESS.matcher(event.email).matches()) }
                     }
                 }
             }
@@ -61,7 +72,7 @@ class ProfileViewModel @Inject constructor(
             val profileData = profileDataStore.data.first()
             val quizResultsFlow = quizRepository.getAllQuizResults(profileData.nickname)
             val bestScore = quizRepository.getBestScore(profileData.nickname) ?: 0f
-            val bestPosition = quizRepository.getBestPosition(profileData.nickname)
+            val bestPosition = if(quizRepository.getBestPosition(profileData.nickname) == null) 0 else quizRepository.getBestPosition(profileData.nickname)!!
 
             quizResultsFlow.collect { quizResults ->
                 setState {

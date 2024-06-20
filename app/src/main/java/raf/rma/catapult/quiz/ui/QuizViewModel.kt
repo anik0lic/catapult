@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import raf.rma.catapult.cats.repository.CatsRepository
+import raf.rma.catapult.leaderboard.api.model.LeaderboardPost
+import raf.rma.catapult.leaderboard.repository.LeaderboardRepository
 import raf.rma.catapult.photos.repository.PhotoRepository
 import raf.rma.catapult.profile.datastore.ProfileDataStore
 import raf.rma.catapult.quiz.db.QuizResult
@@ -31,6 +33,7 @@ class QuizViewModel @Inject constructor(
     private val quizRepository: QuizRepository,
     private val photoRepository: PhotoRepository,
     private val catsRepository: CatsRepository,
+    private val leaderboardRepository: LeaderboardRepository,
     private val profileDataStore: ProfileDataStore
 ) : ViewModel() {
 
@@ -47,7 +50,6 @@ class QuizViewModel @Inject constructor(
     init {
         observeEvents()
         getQuestions()
-        startTimer()
     }
 
     private fun getQuestions(){
@@ -58,6 +60,7 @@ class QuizViewModel @Inject constructor(
                     val questions = generateQuestions()
                     setState { copy(questions = questions, loading = false) }
                 }
+                startTimer()
             } catch (error: Exception){
                 Log.d("QuizViewModel", "Exception", error)
                 setState { copy(loading = false, error = error) }
@@ -72,7 +75,6 @@ class QuizViewModel @Inject constructor(
         viewModelScope.launch {
             events.collect { event ->
                 when(event){
-                    is QuizEvent.NextQuestion -> {}
                     is QuizEvent.StopQuiz -> {
                         timer?.cancel()
                         setState { copy(showExitDialog = true) }
@@ -84,41 +86,39 @@ class QuizViewModel @Inject constructor(
                     }
                     is QuizEvent.FinishQuiz -> finishQuiz()
                     is QuizEvent.OptionSelected -> submitAnswer(state.value.questions[state.value.currentQuestionIndex].incorrectAnswers[event.optionIndex])
+                    is QuizEvent.PublishScore -> publish()
                 }
             }
         }
     }
 
     private fun startTimer(time: Long = 300000) {
-        timer = object : CountDownTimer(time, 1000) { // 1000ms = 1s, 300000ms = 5min
+        timer = object : CountDownTimer(time, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 setState { copy(timeRemaining = millisUntilFinished) }
             }
 
             override fun onFinish() {
-//                // ukoliko nije zavrsio sva pitanja a vreme je isteklo, prelazimo na Result
-//                setState { copy(questions = emptyList()) } // vracamo na Result screen
-//
-//                val ubp = calculateUBP();
-//                ubp.coerceAtMost(maximumValue = 100.00f)
-//                setState { copy(ubp = ubp) }
-                finishQuiz()
-
+                setState { copy(questions = emptyList()) }
+                setState { copy(quizFinished = true)}
+                val score = calculateScore().coerceAtMost(100.00f)
+                setState { copy(score = score) }
             }
         }
-        timer?.start() // timer? means that timer can be null
+        timer?.start()
     }
 
     fun submitAnswer(option: String){
         viewModelScope.launch {
             val currentQuestion = state.value.questions[state.value.currentQuestionIndex]
             val correctAnswer = currentQuestion.correctAnswer
+            setState { copy(selectedOption = option)}
             val isCorrect = option == correctAnswer
+
             if (isCorrect) {
                 setState {
                     copy(
                         correctAnswers = state.value.correctAnswers + 1,
-                        selectedOption = option
                     )
                 }
             }
@@ -130,11 +130,15 @@ class QuizViewModel @Inject constructor(
                     copy(
                         currentQuestionIndex = currentQuestionIndex + 1,
                         selectedOption = null
-//                    isOptionCorrect = null
                     )
                 }
-            } else {
-                finishQuiz()
+            }
+            else {
+                setState { copy(questions = emptyList()) }
+                setState { copy(quizFinished = true)}
+                val score = calculateScore().coerceAtMost(100.00f)
+                setState { copy(score = score) }
+                timer?.cancel()
             }
         }
     }
@@ -142,49 +146,79 @@ class QuizViewModel @Inject constructor(
     private fun finishQuiz() {
         viewModelScope.launch {
             Log.d("QUIZ", "Quiz completed with score: ${state.value.score}")
-            setState { copy(questions = emptyList()) }
-            setState { copy(quizFinished = true) }
 
             val userProfile = profileDataStore.data.first()
-            val score = calculateScore().coerceAtMost(100.00f)
 
             val quizResult = QuizResult(
                 nickname = userProfile.nickname,
-                score = score,
-                date = Date().toString(), // trenutni datum
+                score = state.value.score,
+                date = Date().toString(),
             )
             quizRepository.insertQuizResult(quizResult)
+        }
+    }
 
-            setState { copy(score = score) }
+    private fun publish(){
+        viewModelScope.launch {
+            Log.d("QUIZ", "Quiz completed with score: ${state.value.score}")
+
+            val userProfile = profileDataStore.data.first()
+
+            val leaderboardPost = LeaderboardPost(
+                nickname = userProfile.nickname,
+                result = state.value.score,
+                category = 1
+            )
+            val response = leaderboardRepository.postLeaderboard(leaderboardPost)
+
+            val quizResult = QuizResult(
+                nickname = userProfile.nickname,
+                score = state.value.score,
+                date = Date().toString(),
+                ranking = response.ranking
+            )
+            quizRepository.insertQuizResult(quizResult)
         }
     }
 
     private fun calculateScore(): Float {
-        return (state.value.score * 2.5 * (1 + ((state.value.timeRemaining / 1000) + 120) / 300)).toFloat()
+        Log.d("QUIZ", "Correct answers: ${state.value.correctAnswers}, Time remaining: ${state.value.timeRemaining}")
+
+        return (state.value.correctAnswers * 2.5 * (1 + ((state.value.timeRemaining / 1000) + 120) / 300)).toFloat()
     }
 
     private suspend fun generateQuestions(): List<QuizQuestion>{
         val cats = catsRepository.getAllCats()
-        val questionCats = cats.shuffled().take(20)
+        val questionCats = cats.shuffled().take(23)
         val questions = mutableListOf<QuizQuestion>()
+
         Log.d("QUIZ", "Question cats: $questionCats")
+
         questionCats.forEach { cat ->
             var photos = photoRepository.getAllPhotos().filter { it.catId == cat.id }.shuffled()
+
             if(photos.isEmpty()){
-                photoRepository.fetchPhoto(cat.referenceImageId, cat.id)
+                try {
+                    photoRepository.fetchPhoto(cat.referenceImageId, cat.id)
+                } catch (error: Exception){
+                    Log.d("QUIZ", "Error fetching photo", error)
+                }
             }
+
             photos = photoRepository.getAllPhotos().filter { it.catId == cat.id }.shuffled()
             Log.d("QUIZ", "Question Photos: $photos")
+
             when ((1..3).random()) {
-                1 -> {
+                1 -> if(photos.isNotEmpty()){
                     val incorrectAnswers = cats.filter { it.id != cat.id }
                     .shuffled()
-                    .take(3)
                     .map { it.name }
+                    .distinct()
+                    .take(3)
 
                     questions.add(
                         QuizQuestion(
-                            question = "Koja je rasa mačke sa slike?",
+                            question = "What breed is the cat in the picture?",
                             correctAnswer = cat.name,
                             incorrectAnswers = incorrectAnswers,
                             imageUrl = photos.first().url,
@@ -194,15 +228,16 @@ class QuizViewModel @Inject constructor(
                     )
                 }
 
-                2 -> {
+                2 -> if(photos.isNotEmpty()){
                     val incorrectAnswers = cats.filter { it.origin != cat.origin }
                         .shuffled()
-                        .take(3)
                         .map { it.origin }
+                        .distinct()
+                        .take(3)
 
                     questions.add(
                         QuizQuestion(
-                            question = "Odakle je mačka sa slike?",
+                            question = "Where is the cat in the picture from?",
                             correctAnswer = cat.origin,
                             incorrectAnswers = incorrectAnswers,
                             imageUrl = photos.first().url,
@@ -212,16 +247,17 @@ class QuizViewModel @Inject constructor(
                     )
                 }
 
-                3 -> {
+                3 -> if(photos.isNotEmpty()){
                     val incorrectAnswers =
                         cats.filter { it.temperament != cat.temperament }
                             .shuffled()
-                            .take(3)
                             .map { it.temperament }
+                            .distinct()
+                            .take(3)
 
                     questions.add(
                         QuizQuestion(
-                            question = "Kakav je karakter mačke sa slike?",
+                            question = "What is the temperament of the cat in the picture?",
                             correctAnswer = cat.temperament,
                             incorrectAnswers = incorrectAnswers,
                             imageUrl = photos.first().url,
@@ -233,6 +269,6 @@ class QuizViewModel @Inject constructor(
             }
         }
         Log.d("QUIZ", "Questions generated: $questions")
-        return questions
+        return questions.take(20)
     }
 }

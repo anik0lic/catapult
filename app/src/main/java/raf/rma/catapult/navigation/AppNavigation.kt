@@ -123,10 +123,6 @@ fun AppNavigation(profileDataStore: ProfileDataStore) {
             photoGallery(
                 route = "photo/{catId}",
                 arguments = listOf(
-    //                navArgument(name = "photoId") {
-    //                    nullable = false
-    //                    type = NavType.StringType
-    //                },
                     navArgument(name = "catId") {
                         nullable = false
                         type = NavType.StringType
@@ -144,10 +140,7 @@ fun AppNavigation(profileDataStore: ProfileDataStore) {
                 },
                 onClose = {
                     navController.navigateUp()
-                },
-                onPublishScore = {
-
-                },
+                }
             )
 
 

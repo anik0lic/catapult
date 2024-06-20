@@ -36,7 +36,6 @@ class CatDetailsViewModel @Inject constructor(
     init {
         fetchCatDetails()
         observeCatDetails()
-        getImage()
     }
 
     private fun fetchCatDetails(){
@@ -60,6 +59,7 @@ class CatDetailsViewModel @Inject constructor(
                 withContext(Dispatchers.IO) {
                     photoRepository.fetchPhoto(photoId = photoId, catId = catId)
                 }
+                getImage()
             } catch (error: IOException) {
                 setState { copy(error = true) }
             }

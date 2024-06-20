@@ -18,6 +18,6 @@ interface QuizResultDao {
     @Query("SELECT MAX(score) FROM quiz_results WHERE nickname = :nickname")
     suspend fun getBestScore(nickname: String): Float?
 
-    @Query("SELECT COUNT(*) FROM (SELECT DISTINCT score FROM quiz_results WHERE score > (SELECT MAX(score) FROM quiz_results WHERE nickname = :nickname))")
-    suspend fun getBestPosition(nickname: String): Int
+    @Query("SELECT MIN(ranking) FROM quiz_results WHERE nickname = :nickname")
+    suspend fun getBestRanking(nickname: String): Int?
 }

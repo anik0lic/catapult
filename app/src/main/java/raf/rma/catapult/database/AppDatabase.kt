@@ -15,7 +15,7 @@ import raf.rma.catapult.quiz.db.QuizResultDao
         Photo::class,
         QuizResult::class
     ],
-    version = 4,
+    version = 6,
     exportSchema = true,
 )
 abstract class AppDatabase : RoomDatabase() {
