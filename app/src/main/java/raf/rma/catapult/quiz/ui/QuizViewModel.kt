@@ -20,11 +20,11 @@ import raf.rma.catapult.leaderboard.repository.LeaderboardRepository
 import raf.rma.catapult.photos.repository.PhotoRepository
 import raf.rma.catapult.profile.datastore.ProfileDataStore
 import raf.rma.catapult.quiz.db.QuizResult
-import raf.rma.catapult.quiz.ui.QuizContract.QuizState
 import raf.rma.catapult.quiz.model.QuestionType
 import raf.rma.catapult.quiz.model.QuizQuestion
 import raf.rma.catapult.quiz.repository.QuizRepository
 import raf.rma.catapult.quiz.ui.QuizContract.QuizEvent
+import raf.rma.catapult.quiz.ui.QuizContract.QuizState
 import java.util.Date
 import javax.inject.Inject
 
@@ -203,9 +203,8 @@ class QuizViewModel @Inject constructor(
                 } catch (error: Exception){
                     Log.d("QUIZ", "Error fetching photo", error)
                 }
+                photos = photoRepository.getAllPhotos().filter { it.catId == cat.id }.shuffled()
             }
-
-            photos = photoRepository.getAllPhotos().filter { it.catId == cat.id }.shuffled()
             Log.d("QUIZ", "Question Photos: $photos")
 
             when ((1..3).random()) {

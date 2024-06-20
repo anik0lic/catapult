@@ -2,6 +2,9 @@ package raf.rma.catapult.quiz.ui//package raf.rma.catapult.quiz
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -44,7 +47,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import coil.compose.rememberAsyncImagePainter
-import raf.rma.catapult.core.theme.LightOrange
 import raf.rma.catapult.core.theme.Orange
 import raf.rma.catapult.quiz.model.QuizQuestion
 import raf.rma.catapult.quiz.ui.QuizContract.QuizEvent
@@ -56,6 +58,8 @@ fun NavGraphBuilder.quiz(
     onClose: () -> Unit
 ) = composable(
     route = route,
+    enterTransition = { slideInVertically { it } },
+    popExitTransition = { slideOutVertically { it } },
 ) { navBackStackEntry ->
 
     val quizViewModel: QuizViewModel = hiltViewModel(navBackStackEntry)
@@ -131,12 +135,12 @@ fun QuizScreen(
                 },
                 actions = {
                     Text(
-                        text = "Time remaining: ${state.timeRemaining / 1000} sec",
+                        text = "Time remaining: ${state.timeRemaining / 1000 / 60} min ${state.timeRemaining / 1000 % 60} sec",
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding(end = 16.dp)
                     )
                 }, colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = LightOrange
+                    containerColor = MaterialTheme.colorScheme.secondary
                 )
             )
         },
@@ -154,11 +158,13 @@ fun QuizScreen(
                         CircularProgressIndicator()
                     }
                 } else if (state.questions.isNotEmpty()) {
-                    val question = state.questions[state.currentQuestionIndex]
-                    QuestionScreen(
-                        question = question,
-                        onOptionSelected = onOptionSelected
-                    )
+                    Crossfade(targetState = state.currentQuestionIndex, label = "") { index ->
+                        val question = state.questions[index]
+                        QuestionScreen(
+                            question = question,
+                            onOptionSelected = onOptionSelected
+                        )
+                    }
                 } else if (state.quizFinished){
                     ResultScreen(
                         score = state.score,
@@ -228,11 +234,11 @@ fun QuestionScreen(
             val options = question.options
             options.forEach { option ->
                 val buttonColor = when {
-                    state.selectedOption == null -> LightOrange
+                    state.selectedOption == null -> MaterialTheme.colorScheme.surface
                     option == state.selectedOption && option == state.questions[state.currentQuestionIndex].correctAnswer -> Color.Green
                     option == state.selectedOption && option != state.questions[state.currentQuestionIndex].correctAnswer -> Color.Red
                     option != state.selectedOption && option == state.questions[state.currentQuestionIndex].correctAnswer -> Color.Green
-                    else -> LightOrange
+                    else -> MaterialTheme.colorScheme.surface
                 }
                 Button(
                     onClick = {
@@ -253,6 +259,7 @@ fun QuestionScreen(
                         text = option,
                         style = TextStyle(
                             fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.tertiary
                         )
                     )
                 }

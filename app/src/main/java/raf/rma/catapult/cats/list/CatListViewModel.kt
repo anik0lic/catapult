@@ -15,11 +15,10 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import raf.rma.catapult.cats.list.CatListContract.CatListUiEvent
 import raf.rma.catapult.cats.list.CatListContract.CatListState
+import raf.rma.catapult.cats.list.CatListContract.CatListUiEvent
 import raf.rma.catapult.cats.mappers.asCatUiModel
 import raf.rma.catapult.cats.repository.CatsRepository
-import raf.rma.catapult.photos.repository.PhotoRepository
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 

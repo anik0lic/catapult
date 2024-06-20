@@ -70,6 +70,9 @@ fun AppNavigation(profileDataStore: ProfileDataStore) {
         ) {
             login(
                 route = "login",
+                onCreate = {
+                    navController.navigate(route = "cats")
+                }
             )
 
             cats(

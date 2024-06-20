@@ -28,8 +28,6 @@ class ProfileDataStore @Inject constructor(
             initialValue = runBlocking { dataStore.data.first() },
         )
 
-//    val dataFlow = dataStore.data
-
     val isEmpty: Flow<Boolean> = data
         .map { it == ProfileData.EMPTY }
         .distinctUntilChanged()

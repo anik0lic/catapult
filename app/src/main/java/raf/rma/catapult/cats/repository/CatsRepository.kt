@@ -1,8 +1,8 @@
 package raf.rma.catapult.cats.repository
 
-import raf.rma.catapult.database.AppDatabase
 import raf.rma.catapult.cats.api.CatsApi
 import raf.rma.catapult.cats.mappers.asCatDbModel
+import raf.rma.catapult.database.AppDatabase
 import javax.inject.Inject
 
 class CatsRepository @Inject constructor(

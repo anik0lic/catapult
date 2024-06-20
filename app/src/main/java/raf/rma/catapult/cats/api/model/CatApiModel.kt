@@ -7,13 +7,11 @@ import kotlinx.serialization.Serializable
 data class CatApiModel(
     val id: String,
     val name: String,
-//    @SerialName("alt_names") val alternativeName: String = "",
     val temperament: String,
     val origin: String,
     val description: String,
     @SerialName("life_span") val lifeSpan: String,
     val weight: Weight,
-//    @SerialName("wikipedia_url") val wikipediaURL: String = "",
     val rare: Int,
 
     val adaptability: Int,

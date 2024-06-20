@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import raf.rma.catapult.navigation.catId
-import raf.rma.catapult.navigation.photoId
 import raf.rma.catapult.photos.gallery.PhotoGalleryContract.PhotoGalleryState
 import raf.rma.catapult.photos.mappers.asPhotoUiModel
 import raf.rma.catapult.photos.repository.PhotoRepository
@@ -23,7 +22,6 @@ class PhotoGalleryViewModel @Inject constructor(
     private val photoRepository: PhotoRepository,
 ) : ViewModel() {
 
-//    private val photoId = savedStateHandle.photoId
     private val catId = savedStateHandle.catId
 
     private val _state = MutableStateFlow(PhotoGalleryState())

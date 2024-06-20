@@ -1,7 +1,5 @@
 package raf.rma.catapult.profile.details
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,7 +1,5 @@
 package raf.rma.catapult.quiz.ui
 
-import raf.rma.catapult.cats.model.CatUiModel
-import raf.rma.catapult.photos.model.PhotoUiModel
 import raf.rma.catapult.quiz.model.QuizQuestion
 
 interface QuizContract {

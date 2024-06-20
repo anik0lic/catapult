@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,7 +27,6 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -64,14 +62,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kotlinx.coroutines.launch
 import raf.rma.catapult.R
-import raf.rma.catapult.cats.list.CatListContract.CatListUiEvent
 import raf.rma.catapult.core.compose.AppDrawerActionItem
 import raf.rma.catapult.core.compose.AppIconButton
-import raf.rma.catapult.core.theme.LightOrange
 import raf.rma.catapult.core.theme.Orange
 import raf.rma.catapult.profile.details.ProfileContract.ProfileEvent
 import raf.rma.catapult.profile.details.ProfileContract.ProfileState
-import raf.rma.catapult.profile.login.LoginContract.LoginEvent
 
 fun NavGraphBuilder.profile(
     route: String,
@@ -158,7 +153,8 @@ private fun ProfileDrawer(
 ){
     BoxWithConstraints {
         ModalDrawerSheet (
-            modifier = Modifier.width(maxWidth * 3 / 4)
+            modifier = Modifier.width(maxWidth * 3 / 4),
+            drawerContainerColor = MaterialTheme.colorScheme.background,
         ) {
             Column {
                 Box(
@@ -211,18 +207,21 @@ private fun ProfileDrawer(
                     AppDrawerActionItem(
                         icon = Icons.Default.MenuBook,
                         text = "Catalog",
-                        onClick = onCatalogClick
+                        onClick = onCatalogClick,
+                        color = MaterialTheme.colorScheme.background
                     )
 
                     AppDrawerActionItem(
                         icon = Icons.Default.Quiz,
                         text = "Quiz",
-                        onClick = onQuizClick
+                        onClick = onQuizClick,
+                        color = MaterialTheme.colorScheme.background
                     )
                     AppDrawerActionItem(
                         icon = Icons.Default.Leaderboard,
                         text = "Leaderboard",
-                        onClick = onLeaderboardClick
+                        onClick = onLeaderboardClick,
+                        color = MaterialTheme.colorScheme.background
                     )
                 }
             }
@@ -257,7 +256,7 @@ private fun ProfileScaffold(
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = LightOrange
+                    containerColor = MaterialTheme.colorScheme.secondary
                 ),
                 actions = {
                     Image(
@@ -364,9 +363,9 @@ private fun ProfileScaffold(
                                 modifier = Modifier.fillMaxWidth(),
                                 label = { Text("New Name") },
                                 colors = TextFieldDefaults.colors(
-                                    unfocusedContainerColor = Color.White,
+                                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
                                     unfocusedIndicatorColor = Orange,
-                                    focusedContainerColor = Color.White,
+                                    focusedContainerColor = MaterialTheme.colorScheme.background,
                                     focusedIndicatorColor = Orange,
                                 ),
                             )
@@ -386,9 +385,9 @@ private fun ProfileScaffold(
                                 isError = !state.isNicknameValid,
                                 label = { Text("New Nickname") },
                                 colors = TextFieldDefaults.colors(
-                                    unfocusedContainerColor = Color.White,
+                                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
                                     unfocusedIndicatorColor = Orange,
-                                    focusedContainerColor = Color.White,
+                                    focusedContainerColor = MaterialTheme.colorScheme.background,
                                     focusedIndicatorColor = Orange,
                                 ),
                             )
@@ -408,9 +407,9 @@ private fun ProfileScaffold(
                                 isError = !state.isEmailValid,
                                 label = { Text("New Email") },
                                 colors = TextFieldDefaults.colors(
-                                    unfocusedContainerColor = Color.White,
+                                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
                                     unfocusedIndicatorColor = Orange,
-                                    focusedContainerColor = Color.White,
+                                    focusedContainerColor = MaterialTheme.colorScheme.background,
                                     focusedIndicatorColor = Orange,
                                 ),
                             )

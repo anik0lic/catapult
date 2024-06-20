@@ -34,6 +34,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -43,7 +44,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -62,11 +62,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kotlinx.coroutines.launch
-import raf.rma.catapult.LocalAnalytics
 import raf.rma.catapult.R
 import raf.rma.catapult.core.compose.AppDrawerActionItem
 import raf.rma.catapult.core.compose.AppIconButton
-import raf.rma.catapult.core.theme.LightOrange
 import raf.rma.catapult.core.theme.Orange
 import raf.rma.catapult.leaderboard.list.LeaderboardListContract.LeaderboardListState
 
@@ -98,11 +96,6 @@ fun LeaderboardListScreen(
 ){
     val uiScope = rememberCoroutineScope()
     val drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed)
-
-//    val analytics = LocalAnalytics.current
-//    SideEffect {
-//        analytics.log("Neka poruka")
-//    }
 
     BackHandler(enabled = drawerState.isOpen){
         uiScope.launch { drawerState.close() }
@@ -194,7 +187,8 @@ private fun LeaderboardListDrawer(
 ){
     BoxWithConstraints {
         ModalDrawerSheet (
-            modifier = Modifier.width(maxWidth * 3 / 4)
+            modifier = Modifier.width(maxWidth * 3 / 4),
+            drawerContainerColor = MaterialTheme.colorScheme.background,
         ) {
             Column {
                 Box(
@@ -226,19 +220,22 @@ private fun LeaderboardListDrawer(
                     AppDrawerActionItem(
                         icon = Icons.Default.Person,
                         text = "Profile",
-                        onClick = onProfileClick
+                        onClick = onProfileClick,
+                        color = MaterialTheme.colorScheme.background
                     )
 
                     AppDrawerActionItem(
                         icon = Icons.Default.MenuBook,
                         text = "Catalog",
-                        onClick = onCatalogClick
+                        onClick = onCatalogClick,
+                        color = MaterialTheme.colorScheme.background
                     )
 
                     AppDrawerActionItem(
                         icon = Icons.Default.Quiz,
                         text = "Quiz",
-                        onClick = onQuizClick
+                        onClick = onQuizClick,
+                        color = MaterialTheme.colorScheme.background
                     )
 
                     NavigationDrawerItem(
@@ -304,7 +301,7 @@ private fun LeaderboardListScaffold(
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = LightOrange
+                    containerColor = MaterialTheme.colorScheme.secondary
                 ),
                 actions = {
                     Image(
@@ -332,7 +329,8 @@ private fun LeaderboardListScaffold(
                 ) {
                     Card(
                         colors = CardDefaults.cardColors(
-                            containerColor = Color.White
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.tertiary
                         ),
                         border = BorderStroke(1.dp, Orange),
                         modifier = Modifier
@@ -352,7 +350,6 @@ private fun LeaderboardListScaffold(
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold
                                 )
-//                                style = MaterialTheme.typography.headlineSmall,
                             )
                         }
                     }

@@ -2,8 +2,6 @@ package raf.rma.catapult.database
 
 import android.content.Context
 import androidx.room.Room
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 

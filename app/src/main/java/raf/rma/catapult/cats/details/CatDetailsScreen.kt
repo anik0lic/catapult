@@ -1,14 +1,7 @@
 package raf.rma.catapult.cats.details
 
-import android.content.Intent
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -35,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -45,11 +38,9 @@ import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import coil.compose.SubcomposeAsyncImage
-import raf.rma.catapult.R
 import raf.rma.catapult.cats.details.CatDetailsContract.CatDetailsState
 import raf.rma.catapult.cats.model.CatUiModel
 import raf.rma.catapult.core.compose.AppIconButton
-import raf.rma.catapult.core.theme.LightOrange
 import raf.rma.catapult.core.theme.Orange
 import raf.rma.catapult.photos.model.PhotoUiModel
 
@@ -102,7 +93,7 @@ fun CatDetailsScreen(
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = LightOrange
+                    containerColor = MaterialTheme.colorScheme.secondary
                 ),
             )
         },
@@ -134,8 +125,6 @@ fun CatDetailsScreen(
                             photo = it
                         )
                     }
-                } else {
-//                    NoDataContent(id = state.breedId)
                 }
             }
         }
@@ -228,41 +217,6 @@ private fun BreedsDataColumn(
         Spacer(modifier = Modifier.height(8.dp))
         HorizontalDivider(thickness = 1.dp, color = Orange)
         Spacer(modifier = Modifier.height(15.dp))
-
-//        Row(
-//            Modifier.fillMaxSize(),
-//            horizontalArrangement = Arrangement.SpaceEvenly
-//        ) {
-//            DetailsWidget(
-//                number = data.adaptability,
-//                trait = "Adaptability"
-//            )
-//            DetailsWidget(
-//                number = data.affectionLevel,
-//                trait = "Affection"
-//            )
-//            DetailsWidget(
-//                number = data.intelligence,
-//                trait = "Intelligence"
-//            )
-//        }
-
-//        Spacer(modifier = Modifier.height(15.dp))
-
-//        Row(
-//            Modifier.fillMaxSize(),
-//            horizontalArrangement = Arrangement.SpaceEvenly
-//        ) {
-//            DetailsWidget(
-//                number = data.childFriendly,
-//                trait = "Child Friendly"
-//            )
-//            DetailsWidget(
-//                number = data.socialNeeds,
-//                trait = "Social Needs"
-//            )
-//        }
-
 
         FilledIconButton(
             onClick = {

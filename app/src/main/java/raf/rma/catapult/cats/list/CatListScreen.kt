@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,7 +26,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Quiz
-import androidx.compose.material3.Badge
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -38,6 +37,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -47,7 +47,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -67,14 +66,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kotlinx.coroutines.launch
-import raf.rma.catapult.LocalAnalytics
 import raf.rma.catapult.R
 import raf.rma.catapult.cats.list.CatListContract.CatListState
 import raf.rma.catapult.cats.list.CatListContract.CatListUiEvent
 import raf.rma.catapult.core.compose.AppDrawerActionItem
 import raf.rma.catapult.core.compose.AppIconButton
 import raf.rma.catapult.core.compose.SearchBar
-import raf.rma.catapult.core.theme.LightOrange
 import raf.rma.catapult.core.theme.Orange
 
 fun NavGraphBuilder.cats(
@@ -88,7 +85,7 @@ fun NavGraphBuilder.cats(
 ){
     val catListViewModel = hiltViewModel<CatListViewModel>()
     val state = catListViewModel.state.collectAsState()
-//    EnableEdgeToEdge(isDarkTheme = false)
+
     CatListScreen(
         state = state.value,
         eventPublisher = {
@@ -112,11 +109,6 @@ fun CatListScreen(
 ) {
     val uiScope = rememberCoroutineScope()
     val drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed)
-
-    val analytics = LocalAnalytics.current
-    SideEffect {
-        analytics.log("Neka poruka")
-    }
 
     BackHandler(enabled = drawerState.isOpen){
         uiScope.launch { drawerState.close() }
@@ -220,7 +212,8 @@ private fun CatListDrawer(
 ){
     BoxWithConstraints {
         ModalDrawerSheet (
-            modifier = Modifier.width(maxWidth * 3 / 4)
+            modifier = Modifier.width(maxWidth * 3 / 4),
+            drawerContainerColor = MaterialTheme.colorScheme.background,
         ) {
             Column {
                 Box(
@@ -237,13 +230,14 @@ private fun CatListDrawer(
                         style = TextStyle(
                             fontSize = 30.sp,
                             fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.tertiary
                         )
                     )
                     HorizontalDivider(
                         modifier = Modifier
                             .padding(bottom = 5.dp)
                             .fillMaxWidth(),
-                        color = Orange
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -252,7 +246,8 @@ private fun CatListDrawer(
                     AppDrawerActionItem(
                         icon = Icons.Default.Person,
                         text = "Profile",
-                        onClick = onProfileClick
+                        onClick = onProfileClick,
+                        color = MaterialTheme.colorScheme.background
                     )
 
                     NavigationDrawerItem(
@@ -270,7 +265,7 @@ private fun CatListDrawer(
 
                         },
                         colors = NavigationDrawerItemDefaults.colors(
-                            selectedContainerColor = Orange,
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
                             selectedTextColor = Color.White,
                             selectedIconColor = Color.White
                         )
@@ -279,13 +274,15 @@ private fun CatListDrawer(
                     AppDrawerActionItem(
                         icon = Icons.Default.Quiz,
                         text = "Quiz",
-                        onClick = onQuizClick
+                        onClick = onQuizClick,
+                        color = MaterialTheme.colorScheme.background
                     )
 
                     AppDrawerActionItem(
                         icon = Icons.Default.Leaderboard,
                         text = "Leaderboard",
-                        onClick = onLeaderboardClick
+                        onClick = onLeaderboardClick,
+                        color = MaterialTheme.colorScheme.background
                     )
                 }
             }
@@ -333,7 +330,7 @@ private fun CatListScaffold(
                         )
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = LightOrange
+                        containerColor = MaterialTheme.colorScheme.secondary
                     ),
                     actions = {
                         Image(
@@ -347,7 +344,7 @@ private fun CatListScaffold(
                 SearchBar(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(LightOrange)
+                        .background(MaterialTheme.colorScheme.secondary)
                         .padding(horizontal = 20.dp, vertical = 8.dp)
                         .clip(RoundedCornerShape(30.dp)),
                     onQueryChange = { query ->
@@ -359,13 +356,15 @@ private fun CatListScaffold(
                     },
                     onCloseClicked = { eventPublisher(CatListUiEvent.CloseSearchMode) },
                     query = state.query,
-                    activated = state.isSearchMode
+                    activated = state.isSearchMode,
+                    color = MaterialTheme.colorScheme.background
                 )
             }
         },
         content = {paddingValues ->
             LazyColumn(
                 modifier = Modifier
+                    .padding(top = 16.dp)
                     .nestedScroll(scrollBehavior.nestedScrollConnection)
                     .fillMaxSize(),
                 state = listState,
@@ -377,14 +376,14 @@ private fun CatListScaffold(
                     key = { it.id },
                 ) {
                     Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.White
-                        ),
                         border = BorderStroke(1.dp, Orange),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 8.dp)
                             .clickable { onCatClick(it.id) },
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.background
+                        ),
                     ) {
                         Column {
                             Text(
@@ -395,7 +394,7 @@ private fun CatListScaffold(
                                 style = TextStyle(
                                     fontSize = 21.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Orange
+                                    color = MaterialTheme.colorScheme.tertiary
                                 )
                             )
 
@@ -408,6 +407,28 @@ private fun CatListScaffold(
                                     fontSize = 18.sp,
                                 )
                             )
+                            val temperaments = it.temperament.split(", ").take(3)
+
+                            if (temperaments.isNotEmpty()) {
+                                Row(
+                                    modifier = Modifier
+                                        .padding(
+                                            start = 16.dp,
+                                            top = 8.dp,
+                                            end = 16.dp,
+                                            bottom = 8.dp
+                                        )
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    temperaments.forEach { temperament ->
+                                        AssistChip(
+                                            onClick = { /*TODO*/ },
+                                            label = { Text(text = temperament) },
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }

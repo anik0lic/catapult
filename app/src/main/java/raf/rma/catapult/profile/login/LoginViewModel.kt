@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import raf.rma.catapult.cats.list.CatListContract.CatListState
 import raf.rma.catapult.profile.datastore.ProfileData
 import raf.rma.catapult.profile.datastore.ProfileDataStore
 import raf.rma.catapult.profile.login.LoginContract.LoginEvent

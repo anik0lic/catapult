@@ -38,7 +38,8 @@ import raf.rma.catapult.profile.login.LoginContract.LoginEvent
 import raf.rma.catapult.profile.login.LoginContract.LoginState
 
 fun NavGraphBuilder.login(
-    route: String
+    route: String,
+    onCreate: () -> Unit
 ) = composable(route = route) {
     val loginViewModel = hiltViewModel<LoginViewModel>()
     val state = loginViewModel.state.collectAsState()
@@ -48,6 +49,7 @@ fun NavGraphBuilder.login(
         eventPublisher = {
             loginViewModel.setEvent(it)
         },
+        onCreate = onCreate
     )
 }
 
@@ -56,6 +58,7 @@ fun NavGraphBuilder.login(
 fun LoginScreen(
     state: LoginState,
     eventPublisher: (uiEvent: LoginEvent) -> Unit,
+    onCreate: () -> Unit
 ) {
     Scaffold (
         topBar = {
@@ -160,7 +163,10 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = { eventPublisher(LoginEvent.OnCreateProfile) },
+                    onClick = {
+                        eventPublisher(LoginEvent.OnCreateProfile)
+                        onCreate()
+                    },
                     enabled = state.isNameValid && state.isNicknameValid && state.isEmailValid,
                     modifier = Modifier
                         .fillMaxWidth()

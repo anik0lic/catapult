@@ -1,6 +1,5 @@
 package raf.rma.catapult.profile.details
 
-import raf.rma.catapult.profile.datastore.ProfileData
 import raf.rma.catapult.quiz.db.QuizResult
 
 interface ProfileContract {

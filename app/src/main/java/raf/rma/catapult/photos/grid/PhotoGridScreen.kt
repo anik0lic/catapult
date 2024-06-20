@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
@@ -18,10 +17,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -33,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,11 +37,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import coil.compose.SubcomposeAsyncImage
 import raf.rma.catapult.core.compose.AppIconButton
-import raf.rma.catapult.core.compose.PhotoPreview
-import raf.rma.catapult.core.theme.LightOrange
-import raf.rma.catapult.photos.model.PhotoUiModel
 import raf.rma.catapult.photos.grid.PhotoGridContract.PhotoGridState
-import raf.rma.catapult.quiz.ui.QuizContract.QuizEvent
+import raf.rma.catapult.photos.model.PhotoUiModel
 
 fun NavGraphBuilder.photoGrid(
     route: String,
@@ -95,7 +87,7 @@ fun PhotoGridScreen(
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = LightOrange
+                    containerColor = MaterialTheme.colorScheme.secondary
                 )
             )
         },
@@ -136,7 +128,6 @@ fun PhotoGridScreen(
                                     .size(cellSize)
                                     .clickable {
                                         onPhotoClick(photo.catId)
-//                                        onPhotoClick(photo.photoId)
                                     }
                             ){
                                 SubcomposeAsyncImage(
@@ -151,24 +142,6 @@ fun PhotoGridScreen(
                             }
 
                         }
-
-
-//                        if (!state.updating) {
-//                            item(
-//                                span = {
-//                                    GridItemSpan(2)
-//                                }
-//                            ) {
-//                                Text(
-//                                    modifier = Modifier
-//                                        .fillMaxWidth()
-//                                        .padding(all = 32.dp),
-//                                    text = "Made with Kotlin & Compose" +
-//                                            "\n\uD83D\uDC9A",
-//                                    textAlign = TextAlign.Center,
-//                                )
-//                            }
-//                        }
                     }
                 }
             }

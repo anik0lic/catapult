@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import raf.rma.catapult.navigation.catId
-import raf.rma.catapult.photos.grid.PhotoGridContract.*
+import raf.rma.catapult.photos.grid.PhotoGridContract.PhotoGridState
 import raf.rma.catapult.photos.mappers.asPhotoUiModel
 import raf.rma.catapult.photos.repository.PhotoRepository
 import javax.inject.Inject
