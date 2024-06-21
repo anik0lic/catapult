@@ -165,13 +165,20 @@ private fun ProfileDrawer(
                 ){
                     Text(
                         modifier = Modifier
-                            .padding(bottom = 10.dp)
+                            .padding(top = 90.dp)
+                            .align(Alignment.Center)
                             .padding(horizontal = 16.dp),
-                        text = "Menu",
+                        text = "Catapult",
                         style = TextStyle(
                             fontSize = 30.sp,
                             fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.tertiary
                         )
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.cat_logo),
+                        contentDescription = "logo",
+                        modifier = Modifier.align(Alignment.Center)
                     )
                     HorizontalDivider(
                         modifier = Modifier
